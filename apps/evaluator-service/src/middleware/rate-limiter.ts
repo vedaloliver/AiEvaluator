@@ -1,0 +1,14 @@
+import rateLimit from 'express-rate-limit';
+
+export const rateLimiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes default
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10), // 100 requests per window default
+  message: {
+    error: {
+      message: 'Too many requests, please try again later',
+      statusCode: 429,
+    },
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

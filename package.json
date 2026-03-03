@@ -1,0 +1,30 @@
+{
+  "name": "ai-evaluator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Governance Framework - CV Portfolio Project",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter shared-types build && concurrently \"pnpm --filter frontend dev\" \"pnpm --filter evaluator-service dev\"",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:evaluator": "pnpm --filter evaluator-service dev",
+    "build": "pnpm --filter shared-types build && pnpm --filter evaluator-service build && pnpm --filter frontend build",
+    "build:frontend": "pnpm --filter shared-types build && pnpm --filter frontend build",
+    "build:evaluator": "pnpm --filter shared-types build && pnpm --filter evaluator-service build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "clean": "pnpm -r run clean"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
