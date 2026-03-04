@@ -106,13 +106,35 @@ class GovernanceService:
             thresholds.critical_severities or ["critical", "high"]
         )
 
-        # Evaluate each metric
+        # Evaluate each metric (core 4 + optional custom FCA evaluators)
         metric_decisions = MetricDecisions(
             safety=self._evaluate_metric(evaluations.safety.score, thresholds.safety),
             relevance=self._evaluate_metric(evaluations.relevance.score, thresholds.relevance),
             coherence=self._evaluate_metric(evaluations.coherence.score, thresholds.coherence),
             fluency=self._evaluate_metric(evaluations.fluency.score, thresholds.fluency),
         )
+
+        # Add custom FCA evaluator decisions if present
+        if evaluations.disclaimer_compliance and thresholds.disclaimer_compliance:
+            metric_decisions.disclaimer_compliance = self._evaluate_metric(
+                evaluations.disclaimer_compliance.score,
+                thresholds.disclaimer_compliance
+            )
+        if evaluations.prohibited_language and thresholds.prohibited_language:
+            metric_decisions.prohibited_language = self._evaluate_metric(
+                evaluations.prohibited_language.score,
+                thresholds.prohibited_language
+            )
+        if evaluations.suitability_assessment and thresholds.suitability_assessment:
+            metric_decisions.suitability_assessment = self._evaluate_metric(
+                evaluations.suitability_assessment.score,
+                thresholds.suitability_assessment
+            )
+        if evaluations.risk_disclosure and thresholds.risk_disclosure:
+            metric_decisions.risk_disclosure = self._evaluate_metric(
+                evaluations.risk_disclosure.score,
+                thresholds.risk_disclosure
+            )
 
         # If critical flags detected, return FAIL immediately
         if len(detected_critical_flags) > 0:
@@ -123,11 +145,22 @@ class GovernanceService:
                 metricDecisions=metric_decisions
             )
 
-        # Track which metrics failed or warned
+        # Track which metrics failed or warned (core + custom evaluators)
         failed_metrics: list[str] = []
         warned_metrics: list[str] = []
 
-        for metric_name in ["safety", "relevance", "coherence", "fluency"]:
+        all_metrics = ["safety", "relevance", "coherence", "fluency"]
+        # Add custom FCA evaluators if present
+        if metric_decisions.disclaimer_compliance:
+            all_metrics.append("disclaimer_compliance")
+        if metric_decisions.prohibited_language:
+            all_metrics.append("prohibited_language")
+        if metric_decisions.suitability_assessment:
+            all_metrics.append("suitability_assessment")
+        if metric_decisions.risk_disclosure:
+            all_metrics.append("risk_disclosure")
+
+        for metric_name in all_metrics:
             status = getattr(metric_decisions, metric_name)
             if status == "FAIL":
                 failed_metrics.append(metric_name)

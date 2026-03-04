@@ -29,7 +29,20 @@ export default function MetricCard({ name, evaluation, status }: MetricCardProps
   };
 
   const config = statusConfig[status];
-  const scorePercentage = Math.round(evaluation.score * 100);
+
+  // Determine if this is an ordinal or continuous score
+  const isOrdinal = evaluation.scoreType === 'ordinal';
+  const maxScore = evaluation.maxScore || 5;
+
+  // Display format
+  const scoreDisplay = isOrdinal
+    ? `${evaluation.score}/${maxScore}`
+    : `${Math.round(evaluation.score * 100)}%`;
+
+  // For progress bar: normalize to 0-100%
+  const scorePercentage = isOrdinal
+    ? Math.round((evaluation.score / maxScore) * 100)
+    : Math.round(evaluation.score * 100);
 
   return (
     <div className={clsx('card p-4 border-l-4', config.borderColor)}>
@@ -43,7 +56,7 @@ export default function MetricCard({ name, evaluation, status }: MetricCardProps
             config.textColor
           )}
         >
-          {scorePercentage}%
+          {scoreDisplay}
         </span>
       </div>
 

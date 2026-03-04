@@ -26,6 +26,16 @@ export function getModelColor(index: number): string {
   return MODEL_COLORS[index % MODEL_COLORS.length];
 }
 
+// Helper function to normalize scores to 0-100 scale
+function normalizeScore(evaluation: any): number {
+  if (evaluation.scoreType === 'ordinal' && evaluation.maxScore) {
+    // Ordinal: convert X/5 to percentage
+    return Math.round((evaluation.score / evaluation.maxScore) * 100);
+  }
+  // Continuous: already 0-1, convert to percentage
+  return Math.round(evaluation.score * 100);
+}
+
 // Transform evaluation results to radar chart format
 export function transformToRadarData(results: EvaluationResult[]): RadarDataPoint[] {
   if (results.length === 0) return [];
@@ -35,6 +45,10 @@ export function transformToRadarData(results: EvaluationResult[]): RadarDataPoin
     { key: 'relevance', label: 'Relevance' },
     { key: 'coherence', label: 'Coherence' },
     { key: 'fluency', label: 'Fluency' },
+    { key: 'disclaimerCompliance', label: 'Disclaimer' },
+    { key: 'prohibitedLanguage', label: 'Language' },
+    { key: 'suitabilityAssessment', label: 'Suitability' },
+    { key: 'riskDisclosure', label: 'Risk' },
   ];
 
   return metrics.map(({ key, label }) => {
@@ -42,11 +56,13 @@ export function transformToRadarData(results: EvaluationResult[]): RadarDataPoin
 
     results.forEach((result) => {
       const evaluation = result.evaluations[key as keyof typeof result.evaluations];
-      dataPoint[result.modelId] = Math.round(evaluation.score);
+      if (evaluation) {
+        dataPoint[result.modelId] = normalizeScore(evaluation);
+      }
     });
 
     return dataPoint;
-  });
+  }).filter(dataPoint => Object.keys(dataPoint).length > 1); // Filter out metrics with no data
 }
 
 // Transform evaluation results to bar chart format
@@ -58,6 +74,10 @@ export function transformToBarData(results: EvaluationResult[]): BarDataPoint[] 
     { key: 'relevance', label: 'Relevance' },
     { key: 'coherence', label: 'Coherence' },
     { key: 'fluency', label: 'Fluency' },
+    { key: 'disclaimerCompliance', label: 'Disclaimer' },
+    { key: 'prohibitedLanguage', label: 'Language' },
+    { key: 'suitabilityAssessment', label: 'Suitability' },
+    { key: 'riskDisclosure', label: 'Risk' },
   ];
 
   return metrics.map(({ key, label }) => {
@@ -65,11 +85,13 @@ export function transformToBarData(results: EvaluationResult[]): BarDataPoint[] 
 
     results.forEach((result) => {
       const evaluation = result.evaluations[key as keyof typeof result.evaluations];
-      dataPoint[result.modelId] = Math.round(evaluation.score);
+      if (evaluation) {
+        dataPoint[result.modelId] = normalizeScore(evaluation);
+      }
     });
 
     return dataPoint;
-  });
+  }).filter(dataPoint => Object.keys(dataPoint).length > 1); // Filter out metrics with no data
 }
 
 // Get model display names

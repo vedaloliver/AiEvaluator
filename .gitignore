@@ -47,3 +47,53 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist-python/
+.eggs/
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Python coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Unit test / coverage reports
+.tox/
+
+# Claude Code / AI assistants
+.claude/
+.cursor/
+
+# Project-specific
+apps/evaluator-service-python/.env
+apps/frontend/.env.local
+*.local
+
+# Backup files
+*.bak
+*.backup
+*~.nib

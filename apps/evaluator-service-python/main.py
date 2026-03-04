@@ -4,22 +4,32 @@ FastAPI server for evaluating AI model responses against regulatory scenarios
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import time
+import logging
 from config.settings import settings
 from routes.evaluation_routes import router
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown"""
     # Startup
-    print("\n🚀 Evaluator Service (Python) starting...")
-    print(f"📊 Environment: {settings.environment}")
+    print("\n>> Evaluator Service (Python) starting...")
+    print(f"   Environment: {settings.environment}")
 
     if settings.use_mock_data:
-        print("🎭 Mode: MOCK DATA (using test fixtures)")
+        print("   Mode: MOCK DATA (using test fixtures)")
         print("   Set USE_MOCK_DATA=false to use real Azure integration")
     else:
         # Validate Azure configuration
@@ -30,15 +40,15 @@ async def lifespan(app: FastAPI):
             settings.azure_client_id,
             settings.azure_client_secret
         ]):
-            print("❌ Missing required Azure environment variables!")
-            print("💡 Tip: Set USE_MOCK_DATA=true in .env to use mock data instead")
-            print("Please check your .env file")
+            print("   ERROR: Missing required Azure environment variables!")
+            print("   Tip: Set USE_MOCK_DATA=true in .env to use mock data instead")
+            print("   Please check your .env file")
             exit(1)
 
-        print("☁️  Mode: Azure AI Foundry")
-        print(f"🔗 Azure Endpoint: {settings.azure_ai_foundry_endpoint}")
+        print("   Mode: Azure AI Foundry")
+        print(f"   Azure Endpoint: {settings.azure_ai_foundry_endpoint}")
 
-    print(f"\n📍 Service running on port {settings.port}")
+    print(f"\n>> Service running on port {settings.port}")
     print(f"   - http://localhost:{settings.port}/")
     print(f"   - http://localhost:{settings.port}/api/v1/health")
     print(f"   - http://localhost:{settings.port}/api/v1/scenarios")
@@ -48,7 +58,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown (if needed)
-    print("\n👋 Shutting down gracefully...")
+    print("\n>> Shutting down gracefully...")
 
 
 # Create FastAPI app
@@ -58,6 +68,25 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+
+    # Log incoming request
+    logger.info(f">>> {request.method} {request.url.path}")
+    if request.query_params:
+        logger.info(f"    Query: {dict(request.query_params)}")
+
+    # Process request
+    response = await call_next(request)
+
+    # Log response
+    duration = (time.time() - start_time) * 1000
+    logger.info(f"<<< {response.status_code} in {duration:.0f}ms")
+
+    return response
 
 # Enable CORS
 app.add_middleware(

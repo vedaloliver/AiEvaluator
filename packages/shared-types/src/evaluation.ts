@@ -4,6 +4,8 @@ export interface EvaluationScore {
   score: number;
   rationale: string;
   severity?: string;
+  scoreType?: 'continuous' | 'ordinal';
+  maxScore?: number;
 }
 
 export interface EvaluationMetrics {
@@ -11,6 +13,12 @@ export interface EvaluationMetrics {
   relevance: EvaluationScore;
   coherence: EvaluationScore;
   fluency: EvaluationScore;
+
+  // Custom FCA evaluators (optional for backward compatibility)
+  disclaimerCompliance?: EvaluationScore;
+  prohibitedLanguage?: EvaluationScore;
+  suitabilityAssessment?: EvaluationScore;
+  riskDisclosure?: EvaluationScore;
 }
 
 export interface EvaluationResult {
@@ -32,6 +40,10 @@ export interface EvaluationRequest {
     relevance: { pass: number; warn: number };
     coherence: { pass: number; warn: number };
     fluency: { pass: number; warn: number };
+    disclaimerCompliance: { pass: number; warn: number };
+    prohibitedLanguage: { pass: number; warn: number };
+    suitabilityAssessment: { pass: number; warn: number };
+    riskDisclosure: { pass: number; warn: number };
   }>;
 }
 
@@ -44,6 +56,10 @@ export interface MultiModelEvaluationRequest {
     relevance: { pass: number; warn: number };
     coherence: { pass: number; warn: number };
     fluency: { pass: number; warn: number };
+    disclaimerCompliance: { pass: number; warn: number };
+    prohibitedLanguage: { pass: number; warn: number };
+    suitabilityAssessment: { pass: number; warn: number };
+    riskDisclosure: { pass: number; warn: number };
   }>;
 }
 

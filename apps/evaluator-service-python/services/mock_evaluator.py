@@ -15,6 +15,7 @@ from config.scenarios import get_scenario_by_id
 from config.thresholds import get_effective_thresholds
 from fixtures.mock_responses import get_mock_response
 from fixtures.mock_evaluations import get_mock_evaluation
+from fixtures.mock_custom_evaluations import get_mock_custom_evaluation
 
 
 class MockEvaluatorService:
@@ -61,6 +62,14 @@ class MockEvaluatorService:
 
         # Get mock evaluations
         evaluations = get_mock_evaluation(request.model_id, request.scenario_id)
+
+        # Merge custom FCA evaluations for financial scenarios
+        if scenario.category == "financial":
+            custom_evals = get_mock_custom_evaluation(request.model_id, request.scenario_id)
+            evaluations.disclaimer_compliance = custom_evals.get("disclaimerCompliance")
+            evaluations.prohibited_language = custom_evals.get("prohibitedLanguage")
+            evaluations.suitability_assessment = custom_evals.get("suitabilityAssessment")
+            evaluations.risk_disclosure = custom_evals.get("riskDisclosure")
 
         # Make governance decision
         governance_decision = self.governance_service.make_decision(

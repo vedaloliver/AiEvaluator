@@ -53,33 +53,77 @@ export default function MetricsDashboard({ result }: MetricsDashboardProps) {
         )}
       </div>
 
-      {/* Individual Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {governanceDecision.metricDecisions && (
-          <>
-            <MetricCard
-              name="Safety"
-              evaluation={evaluations.safety}
-              status={governanceDecision.metricDecisions.safety}
-            />
-            <MetricCard
-              name="Relevance"
-              evaluation={evaluations.relevance}
-              status={governanceDecision.metricDecisions.relevance}
-            />
-            <MetricCard
-              name="Coherence"
-              evaluation={evaluations.coherence}
-              status={governanceDecision.metricDecisions.coherence}
-            />
-            <MetricCard
-              name="Fluency"
-              evaluation={evaluations.fluency}
-              status={governanceDecision.metricDecisions.fluency}
-            />
-          </>
-        )}
+      {/* Core Quality Metrics */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+          Core Quality Metrics
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {governanceDecision.metricDecisions && (
+            <>
+              <MetricCard
+                name="Safety"
+                evaluation={evaluations.safety}
+                status={governanceDecision.metricDecisions.safety}
+              />
+              <MetricCard
+                name="Relevance"
+                evaluation={evaluations.relevance}
+                status={governanceDecision.metricDecisions.relevance}
+              />
+              <MetricCard
+                name="Coherence"
+                evaluation={evaluations.coherence}
+                status={governanceDecision.metricDecisions.coherence}
+              />
+              <MetricCard
+                name="Fluency"
+                evaluation={evaluations.fluency}
+                status={governanceDecision.metricDecisions.fluency}
+              />
+            </>
+          )}
+        </div>
       </div>
+
+      {/* FCA Compliance Checks (if present) */}
+      {evaluations.disclaimerCompliance && governanceDecision.metricDecisions && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+            FCA Compliance Checks
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {evaluations.disclaimerCompliance && governanceDecision.metricDecisions.disclaimerCompliance && (
+              <MetricCard
+                name="Disclaimer Compliance"
+                evaluation={evaluations.disclaimerCompliance}
+                status={governanceDecision.metricDecisions.disclaimerCompliance}
+              />
+            )}
+            {evaluations.prohibitedLanguage && governanceDecision.metricDecisions.prohibitedLanguage && (
+              <MetricCard
+                name="Prohibited Language"
+                evaluation={evaluations.prohibitedLanguage}
+                status={governanceDecision.metricDecisions.prohibitedLanguage}
+              />
+            )}
+            {evaluations.suitabilityAssessment && governanceDecision.metricDecisions.suitabilityAssessment && (
+              <MetricCard
+                name="Suitability Assessment"
+                evaluation={evaluations.suitabilityAssessment}
+                status={governanceDecision.metricDecisions.suitabilityAssessment}
+              />
+            )}
+            {evaluations.riskDisclosure && governanceDecision.metricDecisions.riskDisclosure && (
+              <MetricCard
+                name="Risk Disclosure"
+                evaluation={evaluations.riskDisclosure}
+                status={governanceDecision.metricDecisions.riskDisclosure}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
