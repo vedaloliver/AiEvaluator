@@ -5,11 +5,30 @@ import clsx from 'clsx';
 
 interface MetricCardProps {
   name: string;
-  evaluation: EvaluationScore;
-  status: MetricStatus;
+  evaluation?: EvaluationScore;
+  status?: MetricStatus;
 }
 
 export default function MetricCard({ name, evaluation, status }: MetricCardProps) {
+  // Handle null/undefined evaluation
+  if (!evaluation) {
+    return (
+      <div className="card p-4 border-l-4 border-gray-300 dark:border-gray-600">
+        <div className="flex justify-between items-start mb-2">
+          <h4 className="font-semibold text-gray-900 dark:text-white capitalize">
+            {name}
+          </h4>
+          <span className="text-2xl font-bold text-gray-400 dark:text-gray-500">
+            N/A
+          </span>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+          No data available for this metric
+        </p>
+      </div>
+    );
+  }
+
   const statusConfig = {
     PASS: {
       bgColor: 'bg-pass-light',
@@ -28,7 +47,7 @@ export default function MetricCard({ name, evaluation, status }: MetricCardProps
     },
   };
 
-  const config = statusConfig[status];
+  const config = status ? statusConfig[status] : statusConfig['PASS'];
 
   // Determine if this is an ordinal or continuous score
   const isOrdinal = evaluation.scoreType === 'ordinal';
@@ -73,17 +92,19 @@ export default function MetricCard({ name, evaluation, status }: MetricCardProps
       </div>
 
       {/* Status badge */}
-      <div className="mb-2">
-        <span
-          className={clsx(
-            'badge text-xs',
-            config.bgColor,
-            config.textColor
-          )}
-        >
-          {status}
-        </span>
-      </div>
+      {status && (
+        <div className="mb-2">
+          <span
+            className={clsx(
+              'badge text-xs',
+              config.bgColor,
+              config.textColor
+            )}
+          >
+            {status}
+          </span>
+        </div>
+      )}
 
       {/* Rationale */}
       <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">

@@ -65,13 +65,19 @@ export function useEvaluation() {
     }
   }, []);
 
-  // Auto-select all models when scenario is selected
+  // Auto-select all models and set example query when scenario is selected
   useEffect(() => {
     if (selectedScenarioId && models.length > 0) {
       const allModelIds = models.map((m) => m.id);
       setSelectedModelIds(allModelIds);
+
+      // Auto-populate query with scenario's example query
+      const scenario = scenarios.find((s) => s.id === selectedScenarioId);
+      if (scenario?.exampleQuery) {
+        setQuery(scenario.exampleQuery);
+      }
     }
-  }, [selectedScenarioId, models]);
+  }, [selectedScenarioId, models, scenarios]);
 
   const toggleModel = (modelId: string) => {
     setSelectedModelIds((prev) =>

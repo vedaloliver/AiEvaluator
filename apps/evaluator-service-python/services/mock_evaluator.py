@@ -11,11 +11,11 @@ from datetime import datetime
 from models import EvaluationRequest, EvaluationResult, EvaluationMetrics, EvaluationScore
 from .governance_service import GovernanceService
 from .model_service import ModelService
+from .built_in_evaluator_service import BuiltInEvaluatorService
+from .custom_fca_evaluator_service import CustomFCAEvaluatorService
 from config.scenarios import get_scenario_by_id
 from config.thresholds import get_effective_thresholds
 from fixtures.mock_responses import get_mock_response
-from fixtures.mock_evaluations import get_mock_evaluation
-from fixtures.mock_custom_evaluations import get_mock_custom_evaluation
 
 
 class MockEvaluatorService:
@@ -24,6 +24,8 @@ class MockEvaluatorService:
     def __init__(self):
         self.governance_service = GovernanceService()
         self.model_service = ModelService()
+        self.built_in_service = BuiltInEvaluatorService()
+        self.fca_service = CustomFCAEvaluatorService()
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResult:
         """Main evaluation method using mock data"""
@@ -56,20 +58,38 @@ class MockEvaluatorService:
                 effective_thresholds.coherence = scenario.custom_thresholds.coherence
             if scenario.custom_thresholds.fluency:
                 effective_thresholds.fluency = scenario.custom_thresholds.fluency
+            # Merge FCA thresholds for financial scenarios
+            if scenario.custom_thresholds.disclaimer_compliance:
+                effective_thresholds.disclaimer_compliance = scenario.custom_thresholds.disclaimer_compliance
+            if scenario.custom_thresholds.prohibited_language:
+                effective_thresholds.prohibited_language = scenario.custom_thresholds.prohibited_language
+            if scenario.custom_thresholds.suitability_assessment:
+                effective_thresholds.suitability_assessment = scenario.custom_thresholds.suitability_assessment
+            if scenario.custom_thresholds.risk_disclosure:
+                effective_thresholds.risk_disclosure = scenario.custom_thresholds.risk_disclosure
 
         # Get mock response
         model_response = get_mock_response(request.model_id, request.scenario_id)
 
-        # Get mock evaluations
-        evaluations = get_mock_evaluation(request.model_id, request.scenario_id)
+        # Get built-in evaluations (safety, relevance, coherence, fluency)
+        evaluations = await self.built_in_service.evaluate(
+            request.model_id, request.scenario_id, request.query, model_response
+        )
 
-        # Merge custom FCA evaluations for financial scenarios
+        # Get and merge custom FCA evaluations for financial scenarios
         if scenario.category == "financial":
-            custom_evals = get_mock_custom_evaluation(request.model_id, request.scenario_id)
-            evaluations.disclaimer_compliance = custom_evals.get("disclaimerCompliance")
-            evaluations.prohibited_language = custom_evals.get("prohibitedLanguage")
-            evaluations.suitability_assessment = custom_evals.get("suitabilityAssessment")
-            evaluations.risk_disclosure = custom_evals.get("riskDisclosure")
+            fca_metrics = await self.fca_service.evaluate(
+                request.model_id, request.scenario_id, request.query, model_response
+            )
+
+            # Validate all 4 FCA evaluators are present
+            self.fca_service.validate_complete(fca_metrics)
+
+            # Merge into evaluations
+            evaluations.disclaimer_compliance = fca_metrics.get("disclaimerCompliance")
+            evaluations.prohibited_language = fca_metrics.get("prohibitedLanguage")
+            evaluations.suitability_assessment = fca_metrics.get("suitabilityAssessment")
+            evaluations.risk_disclosure = fca_metrics.get("riskDisclosure")
 
         # Make governance decision
         governance_decision = self.governance_service.make_decision(

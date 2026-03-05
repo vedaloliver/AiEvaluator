@@ -3,6 +3,7 @@ from models import ModelInfo
 
 # Pre-defined list of available models
 # In a real implementation, this would query the Azure AI Foundry catalog
+# Currently only gpt-4 has mock fixtures for testing
 AVAILABLE_MODELS: list[ModelInfo] = [
     ModelInfo(
         id="gpt-4",
@@ -10,38 +11,6 @@ AVAILABLE_MODELS: list[ModelInfo] = [
         provider="OpenAI",
         description="Most capable GPT-4 model for complex reasoning and analysis",
         capabilities=["chat", "reasoning", "code"],
-        maxTokens=8192
-    ),
-    ModelInfo(
-        id="claude-3-opus",
-        name="Claude 3 Opus",
-        provider="Anthropic",
-        description="Highest performance Claude model with superior reasoning",
-        capabilities=["chat", "reasoning", "code", "analysis"],
-        maxTokens=200000
-    ),
-    ModelInfo(
-        id="mistral-large",
-        name="Mistral Large",
-        provider="Mistral AI",
-        description="Advanced multilingual model with strong performance",
-        capabilities=["chat", "reasoning", "code"],
-        maxTokens=32000
-    ),
-    ModelInfo(
-        id="gemini-pro",
-        name="Gemini Pro",
-        provider="Google",
-        description="Google's powerful multimodal AI model",
-        capabilities=["chat", "reasoning", "multimodal"],
-        maxTokens=30720
-    ),
-    ModelInfo(
-        id="llama-3-70b",
-        name="Llama 3 70B",
-        provider="Meta",
-        description="Open-source large language model with strong capabilities",
-        capabilities=["chat", "reasoning"],
         maxTokens=8192
     ),
 ]

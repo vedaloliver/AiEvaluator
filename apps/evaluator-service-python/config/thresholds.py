@@ -17,7 +17,11 @@ def get_effective_thresholds(
         relevance=DEFAULT_THRESHOLDS.relevance,
         coherence=DEFAULT_THRESHOLDS.coherence,
         fluency=DEFAULT_THRESHOLDS.fluency,
-        critical_severities=DEFAULT_THRESHOLDS.critical_severities
+        critical_severities=DEFAULT_THRESHOLDS.critical_severities,
+        disclaimer_compliance=DEFAULT_THRESHOLDS.disclaimer_compliance,
+        prohibited_language=DEFAULT_THRESHOLDS.prohibited_language,
+        suitability_assessment=DEFAULT_THRESHOLDS.suitability_assessment,
+        risk_disclosure=DEFAULT_THRESHOLDS.risk_disclosure
     )
 
     # Override with custom values if provided
@@ -29,5 +33,13 @@ def get_effective_thresholds(
         effective.coherence = custom_thresholds.coherence
     if custom_thresholds.fluency:
         effective.fluency = custom_thresholds.fluency
+    if custom_thresholds.disclaimer_compliance:
+        effective.disclaimer_compliance = custom_thresholds.disclaimer_compliance
+    if custom_thresholds.prohibited_language:
+        effective.prohibited_language = custom_thresholds.prohibited_language
+    if custom_thresholds.suitability_assessment:
+        effective.suitability_assessment = custom_thresholds.suitability_assessment
+    if custom_thresholds.risk_disclosure:
+        effective.risk_disclosure = custom_thresholds.risk_disclosure
 
     return effective

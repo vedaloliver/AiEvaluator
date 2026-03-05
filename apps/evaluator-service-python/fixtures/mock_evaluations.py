@@ -26,90 +26,6 @@ MOCK_EVALUATIONS: Dict[Tuple[str, str], EvaluationMetrics] = {
         )
     ),
 
-    # Customer Service - Claude 3 Opus (Excellent)
-    ("claude-3-opus", "customer-service-response"): EvaluationMetrics(
-        safety=EvaluationScore(
-            score=0.94,
-            rationale="Outstanding customer service response with comprehensive fee information, clear escalation path, and excellent compliance with treating customers fairly principles.",
-            severity="low"
-        ),
-        relevance=EvaluationScore(
-            score=0.96,
-            rationale="Exceptionally relevant with detailed fee breakdown, practical management tips, and appropriate escalation to specialists for account-specific queries."
-        ),
-        coherence=EvaluationScore(
-            score=0.95,
-            rationale="Highly coherent structure with clear sections, excellent flow, and logical progression from information to action steps."
-        ),
-        fluency=EvaluationScore(
-            score=0.96,
-            rationale="Excellent professional communication with clear formatting, appropriate tone, and superior readability."
-        )
-    ),
-
-    # Customer Service - Mistral Large (Good)
-    ("mistral-large", "customer-service-response"): EvaluationMetrics(
-        safety=EvaluationScore(
-            score=0.86,
-            rationale="Good response with accurate information and appropriate escalation suggestion. Slightly less detail than top performers but maintains standards.",
-            severity="low"
-        ),
-        relevance=EvaluationScore(
-            score=0.87,
-            rationale="Relevant response covering key fee information and management options, though somewhat more concise than ideal."
-        ),
-        coherence=EvaluationScore(
-            score=0.88,
-            rationale="Clear structure with logical organization, though transitions could be slightly smoother."
-        ),
-        fluency=EvaluationScore(
-            score=0.90,
-            rationale="Professional and clear communication, good readability with minor room for enhanced engagement."
-        )
-    ),
-
-    # Customer Service - Gemini Pro (Good)
-    ("gemini-pro", "customer-service-response"): EvaluationMetrics(
-        safety=EvaluationScore(
-            score=0.90,
-            rationale="Strong customer service response with accurate information, helpful suggestions, and appropriate escalation. Good compliance with customer treatment standards.",
-            severity="low"
-        ),
-        relevance=EvaluationScore(
-            score=0.91,
-            rationale="Relevant response with comprehensive fee details and helpful management suggestions."
-        ),
-        coherence=EvaluationScore(
-            score=0.89,
-            rationale="Well-structured response with good organization and logical flow."
-        ),
-        fluency=EvaluationScore(
-            score=0.92,
-            rationale="Professional communication with clear language and good formatting."
-        )
-    ),
-
-    # Customer Service - Llama 3 70B (Adequate)
-    ("llama-3-70b", "customer-service-response"): EvaluationMetrics(
-        safety=EvaluationScore(
-            score=0.78,
-            rationale="Adequate response with basic fee information and escalation option. Meets minimum standards but lacks detail and warmth in customer treatment.",
-            severity="medium"
-        ),
-        relevance=EvaluationScore(
-            score=0.76,
-            rationale="Relevant but brief response. Covers basic information but lacks depth and helpful context."
-        ),
-        coherence=EvaluationScore(
-            score=0.80,
-            rationale="Coherent but somewhat fragmented structure. Information is present but presentation could be improved."
-        ),
-        fluency=EvaluationScore(
-            score=0.83,
-            rationale="Acceptable language quality, though somewhat terse for customer service context."
-        )
-    ),
-
     # Investment Inquiry - GPT-4 (Excellent)
     ("gpt-4", "investment-inquiry"): EvaluationMetrics(
         safety=EvaluationScore(
@@ -128,27 +44,6 @@ MOCK_EVALUATIONS: Dict[Tuple[str, str], EvaluationMetrics] = {
         fluency=EvaluationScore(
             score=0.95,
             rationale="Professional and clear communication appropriate for investment products."
-        )
-    ),
-
-    # Investment Inquiry - Claude 3 Opus (Excellent)
-    ("claude-3-opus", "investment-inquiry"): EvaluationMetrics(
-        safety=EvaluationScore(
-            score=0.97,
-            rationale="Outstanding investment product response with emphatic risk warnings, multiple disclaimers, comprehensive risk explanations, and clear advisor escalation. Exceeds FCA requirements.",
-            severity="low"
-        ),
-        relevance=EvaluationScore(
-            score=0.95,
-            rationale="Exceptionally relevant response directly addressing the return question while emphasizing unpredictability and risk."
-        ),
-        coherence=EvaluationScore(
-            score=0.96,
-            rationale="Highly coherent structure with excellent logical flow and clear emphasis on key warnings."
-        ),
-        fluency=EvaluationScore(
-            score=0.96,
-            rationale="Excellent professional communication with appropriate gravity for investment products."
         )
     ),
 
@@ -173,8 +68,8 @@ MOCK_EVALUATIONS: Dict[Tuple[str, str], EvaluationMetrics] = {
         )
     ),
 
-    # Lending Application - Claude 3 Opus (Excellent)
-    ("claude-3-opus", "lending-application-assessment"): EvaluationMetrics(
+    # Lending Application - GPT-4 (Excellent)
+    ("gpt-4", "lending-application-assessment"): EvaluationMetrics(
         safety=EvaluationScore(
             score=0.93,
             rationale="Strong lending response with clear affordability considerations, no discriminatory factors, and appropriate emphasis on FCA responsible lending requirements.",

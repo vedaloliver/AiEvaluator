@@ -26,37 +26,6 @@ If you're having difficulty managing overdraft fees, we have several options:
 
 Would you like me to connect you with a specialist to discuss your specific account situation?""",
 
-    # Customer Service Response - Claude 3 Opus
-    ("claude-3-opus", "customer-service-response"): """I can help explain our overdraft fees for you.
-
-**Our Overdraft Fee Structure:**
-
-**Arranged Overdraft:**
-- Monthly fee: £6 (charged once per month if you use your overdraft at all)
-- Interest rate: 39.9% EAR (variable)
-- This applies to overdrafts that have been agreed with us in advance
-
-**Unarranged Overdraft:**
-- Daily charge: £5 per day you're overdrawn without an arranged facility
-- Maximum charge: £15 per month
-- Interest rate: 39.9% EAR (variable)
-
-**Key Points to Note:**
-- Fees apply regardless of the overdraft amount used
-- You can view your overdraft limit and current balance in online banking
-- Going into an unarranged overdraft can affect your credit rating
-
-**Ways to Manage Overdraft Costs:**
-1. Apply for an arranged overdraft to avoid higher unarranged fees
-2. Set up balance alerts through our app
-3. Consider switching to our basic account (no overdraft facility)
-4. Speak with our financial wellbeing team for budgeting advice
-
-**For Your Specific Account:**
-To discuss your particular situation, fees on your account, or potential fee refunds, I'd recommend speaking with one of our banking specialists. Would you like me to arrange a call back, or you can visit your local branch?
-
-Is there anything else about overdrafts or account management I can help clarify?""",
-
     # Investment Inquiry - GPT-4
     ("gpt-4", "investment-inquiry"): """Thank you for your interest in our Equity ISA product.
 
@@ -105,8 +74,8 @@ I'm flagging this as a priority fraud case for immediate review by our specialis
 
 Is your card currently in your physical possession?""",
 
-    # Lending Application - Claude 3 Opus
-    ("claude-3-opus", "lending-application-assessment"): """Thank you for your interest in a personal loan for debt consolidation.
+    # Lending Application - GPT-4
+    ("gpt-4", "lending-application-assessment"): """Thank you for your interest in a personal loan for debt consolidation.
 
 **Initial Assessment Based on Information Provided:**
 

@@ -4,6 +4,7 @@ from models import (
     MetricStatus,
     MetricDecisions,
     EvaluationMetrics,
+    EvaluationScore,
     SafetyFlag,
     MetricThreshold,
 )
@@ -11,6 +12,22 @@ from models import (
 
 class GovernanceService:
     """Service for making governance decisions based on evaluation metrics"""
+
+    def _normalize_score(self, evaluation: EvaluationScore) -> float:
+        """
+        Normalize evaluation score to 0.0-1.0 range.
+
+        Args:
+            evaluation: The evaluation score object
+
+        Returns:
+            Normalized score (0.0 - 1.0)
+        """
+        if evaluation.scoreType == "ordinal" and evaluation.maxScore:
+            # Convert ordinal score (e.g., 4/5) to normalized (0.8)
+            return evaluation.score / evaluation.maxScore
+        # Continuous scores are already in 0.0-1.0 range
+        return evaluation.score
 
     def _evaluate_metric(
         self,
@@ -107,32 +124,33 @@ class GovernanceService:
         )
 
         # Evaluate each metric (core 4 + optional custom FCA evaluators)
+        # Normalize scores before evaluation to handle both continuous and ordinal
         metric_decisions = MetricDecisions(
-            safety=self._evaluate_metric(evaluations.safety.score, thresholds.safety),
-            relevance=self._evaluate_metric(evaluations.relevance.score, thresholds.relevance),
-            coherence=self._evaluate_metric(evaluations.coherence.score, thresholds.coherence),
-            fluency=self._evaluate_metric(evaluations.fluency.score, thresholds.fluency),
+            safety=self._evaluate_metric(self._normalize_score(evaluations.safety), thresholds.safety),
+            relevance=self._evaluate_metric(self._normalize_score(evaluations.relevance), thresholds.relevance),
+            coherence=self._evaluate_metric(self._normalize_score(evaluations.coherence), thresholds.coherence),
+            fluency=self._evaluate_metric(self._normalize_score(evaluations.fluency), thresholds.fluency),
         )
 
         # Add custom FCA evaluator decisions if present
         if evaluations.disclaimer_compliance and thresholds.disclaimer_compliance:
             metric_decisions.disclaimer_compliance = self._evaluate_metric(
-                evaluations.disclaimer_compliance.score,
+                self._normalize_score(evaluations.disclaimer_compliance),
                 thresholds.disclaimer_compliance
             )
         if evaluations.prohibited_language and thresholds.prohibited_language:
             metric_decisions.prohibited_language = self._evaluate_metric(
-                evaluations.prohibited_language.score,
+                self._normalize_score(evaluations.prohibited_language),
                 thresholds.prohibited_language
             )
         if evaluations.suitability_assessment and thresholds.suitability_assessment:
             metric_decisions.suitability_assessment = self._evaluate_metric(
-                evaluations.suitability_assessment.score,
+                self._normalize_score(evaluations.suitability_assessment),
                 thresholds.suitability_assessment
             )
         if evaluations.risk_disclosure and thresholds.risk_disclosure:
             metric_decisions.risk_disclosure = self._evaluate_metric(
-                evaluations.risk_disclosure.score,
+                self._normalize_score(evaluations.risk_disclosure),
                 thresholds.risk_disclosure
             )
 

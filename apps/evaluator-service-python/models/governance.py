@@ -76,9 +76,10 @@ DEFAULT_THRESHOLDS = GovernanceThresholds(
     coherence=MetricThreshold(**{"pass": 0.75, "warn": 0.60}),
     fluency=MetricThreshold(**{"pass": 0.80, "warn": 0.65}),
     critical_severities=["critical", "high"],
-    # FCA evaluator thresholds (ordinal 1-5 scale)
-    disclaimer_compliance=MetricThreshold(**{"pass": 4, "warn": 3}),
-    prohibited_language=MetricThreshold(**{"pass": 4, "warn": 3}),
-    suitability_assessment=MetricThreshold(**{"pass": 4, "warn": 3}),
-    risk_disclosure=MetricThreshold(**{"pass": 4, "warn": 3})
+    # FCA evaluator thresholds (ordinal 1-5 scale, normalized to 0.0-1.0)
+    # 0.75 = 3.75/5, 0.5 = 2.5/5
+    disclaimer_compliance=MetricThreshold(**{"pass": 0.75, "warn": 0.5}),
+    prohibited_language=MetricThreshold(**{"pass": 0.75, "warn": 0.5}),
+    suitability_assessment=MetricThreshold(**{"pass": 0.75, "warn": 0.5}),
+    risk_disclosure=MetricThreshold(**{"pass": 0.75, "warn": 0.5})
 )
