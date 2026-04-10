@@ -39,6 +39,15 @@ from .azure import (
     AzureEvaluatorResponse,
 )
 
+from .red_team import (
+    AttackStrategy,
+    AttackCategory,
+    RedTeamAttack,
+    RedTeamAttackResult,
+    RedTeamSuiteResult,
+    RedTeamRequest,
+)
+
 __all__ = [
     # Governance
     "MetricThreshold",
@@ -73,4 +82,11 @@ __all__ = [
     "AzureChatResponse",
     "AzureEvaluatorRequest",
     "AzureEvaluatorResponse",
+    # Red Team
+    "AttackStrategy",
+    "AttackCategory",
+    "RedTeamAttack",
+    "RedTeamAttackResult",
+    "RedTeamSuiteResult",
+    "RedTeamRequest",
 ]

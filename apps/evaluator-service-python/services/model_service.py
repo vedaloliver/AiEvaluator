@@ -13,6 +13,22 @@ AVAILABLE_MODELS: list[ModelInfo] = [
         capabilities=["chat", "reasoning", "code"],
         maxTokens=8192
     ),
+    ModelInfo(
+        id="gpt-4o",
+        name="GPT-4o",
+        provider="OpenAI",
+        description="GPT-4 optimized model with improved speed and cost efficiency",
+        capabilities=["chat", "reasoning", "code", "vision"],
+        maxTokens=128000
+    ),
+    ModelInfo(
+        id="claude-3",
+        name="Claude 3 Sonnet",
+        provider="Anthropic",
+        description="Balanced Claude model for general tasks",
+        capabilities=["chat", "reasoning", "code"],
+        maxTokens=200000
+    ),
 ]
 
 

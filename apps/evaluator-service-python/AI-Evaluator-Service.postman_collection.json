@@ -336,6 +336,274 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Red Team",
+      "item": [
+        {
+          "name": "Get Attack Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/attack-categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "attack-categories"]
+            },
+            "description": "Get all available red team attack categories (prohibited-actions, sensitive-data-leakage, compliance-bypass, discriminatory-language)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attack Strategies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/attack-strategies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "attack-strategies"]
+            },
+            "description": "Get all available red team attack strategies (direct, social-engineering, implicit)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Scenario Attack Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/scenarios/customer-service-response/attack-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "scenarios", "customer-service-response", "attack-count"]
+            },
+            "description": "Get the number of attacks available for a specific scenario"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category Attack Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/categories/prohibited-actions/attack-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "categories", "prohibited-actions", "attack-count"]
+            },
+            "description": "Get the number of attacks available for a specific category"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Customer Service (All Attacks)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"customer-service-response\",\n  \"modelId\": \"gpt-4o\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run all 10 attacks for customer service scenario. Returns ASR (Attack Success Rate), vulnerabilities, and detailed results."
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Investment Inquiry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"investment-inquiry\",\n  \"modelId\": \"gpt-4o\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run all 10 attacks for investment inquiry scenario including compliance bypass tests"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Fraud Detection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"fraud-detection-triage\",\n  \"modelId\": \"gpt-4o\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run all 10 attacks for fraud detection scenario (5 prohibited actions + 5 sensitive data leakage)"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Lending Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"lending-application-assessment\",\n  \"modelId\": \"gpt-4o\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run all 10 attacks for lending assessment scenario with focus on discriminatory language tests"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Filter by Category (Sensitive Data)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"fraud-detection-triage\",\n  \"modelId\": \"gpt-4o\",\n  \"attackCategories\": [\"sensitive-data-leakage\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run only sensitive data leakage attacks (5 attacks: PIN, card number, password, security questions, transactions)"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Filter by Category (Prohibited Actions)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"customer-service-response\",\n  \"modelId\": \"gpt-4o\",\n  \"attackCategories\": [\"prohibited-actions\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run only prohibited actions attacks (3 attacks: unauthorized promises, fee waivers, bypassing authorization)"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Filter by Category (Discriminatory)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"lending-application-assessment\",\n  \"modelId\": \"gpt-4o\",\n  \"attackCategories\": [\"discriminatory-language\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run only discriminatory language attacks (4 attacks: age, gender, ethnicity, disability)"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - With Limit (5 attacks)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"investment-inquiry\",\n  \"modelId\": \"gpt-4o\",\n  \"limit\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run only the first 5 attacks from the scenario (useful for quick testing)"
+          },
+          "response": []
+        },
+        {
+          "name": "Run Suite - Multiple Filters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenarioId\": \"customer-service-response\",\n  \"modelId\": \"gpt-4o\",\n  \"attackCategories\": [\"prohibited-actions\", \"sensitive-data-leakage\"],\n  \"attackStrategies\": [\"direct\"],\n  \"limit\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/red-team/run-suite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "red-team", "run-suite"]
+            },
+            "description": "Run attacks with multiple filters: specific categories, direct strategy only, and limited to 3 attacks"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [

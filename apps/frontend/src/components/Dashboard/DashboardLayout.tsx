@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { EvaluationResult, ScenarioListItem } from '@ai-evaluator/shared-types';
 import TopControlBar from './TopControlBar';
-import ChartArea from './ChartArea';
+import MainTabNavigation from './MainTabNavigation';
+import ModelComparisonView from './ModelComparisonView';
+import IndividualModelView from './IndividualModelView';
 import ResultsStream from './ResultsStream';
 
 interface DashboardLayoutProps {
@@ -30,10 +33,11 @@ export default function DashboardLayout({
   onQueryChange,
   onEvaluate,
 }: DashboardLayoutProps) {
+  const [mainTab, setMainTab] = useState<'comparison' | 'individual'>('comparison');
   const displayResults = isStreaming ? streamingResults : results;
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col h-screen">
       {/* Top Control Bar */}
       <TopControlBar
         scenarios={scenarios}
@@ -45,18 +49,38 @@ export default function DashboardLayout({
         onEvaluate={onEvaluate}
       />
 
-      {/* Main Dashboard Grid */}
-      <div className="pt-20 px-4 h-screen">
-        <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-4 h-[calc(100vh-5.5rem)]">
-          {/* Left: Chart Area */}
-          <div className="overflow-hidden">
-            <ChartArea results={displayResults} />
-          </div>
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-hidden pt-20">
+        {/* Main Tab Navigation */}
+        <div className="pt-6">
+          <MainTabNavigation
+            activeTab={mainTab}
+            onTabChange={setMainTab}
+            hasResults={displayResults.length > 0}
+          />
+        </div>
 
-          {/* Right: Results Stream */}
-          <div className="overflow-hidden">
-            <ResultsStream results={displayResults} isStreaming={isStreaming} />
-          </div>
+        {/* Content Views */}
+        <div className="h-[calc(100%-120px)] overflow-hidden">
+          {mainTab === 'comparison' && (
+            <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-4 h-full px-4">
+              {/* Left: Model Comparison View */}
+              <div className="overflow-hidden min-h-0">
+                <ModelComparisonView results={displayResults} />
+              </div>
+
+              {/* Right: Results Stream */}
+              <div className="overflow-hidden min-h-0">
+                <ResultsStream results={displayResults} isStreaming={isStreaming} />
+              </div>
+            </div>
+          )}
+
+          {mainTab === 'individual' && (
+            <div className="h-full px-4 animate-fade-in">
+              <IndividualModelView results={displayResults} />
+            </div>
+          )}
         </div>
       </div>
     </div>

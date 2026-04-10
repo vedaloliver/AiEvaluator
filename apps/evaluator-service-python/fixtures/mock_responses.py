@@ -108,5 +108,10 @@ def get_mock_response(model_id: str, scenario_id: str) -> str:
     if response:
         return response
 
+    # Fallback: Use gpt-4 response for other models if available
+    gpt4_response = MOCK_RESPONSES.get(("gpt-4", scenario_id))
+    if gpt4_response:
+        return gpt4_response
+
     # Default fallback
     return f"This is a mock response for {model_id} in the {scenario_id} scenario. In production, this would contain the actual AI model response from Azure AI Foundry."

@@ -23,9 +23,9 @@ class GovernanceService:
         Returns:
             Normalized score (0.0 - 1.0)
         """
-        if evaluation.scoreType == "ordinal" and evaluation.maxScore:
+        if evaluation.score_type == "ordinal" and evaluation.max_score:
             # Convert ordinal score (e.g., 4/5) to normalized (0.8)
-            return evaluation.score / evaluation.maxScore
+            return evaluation.score / evaluation.max_score
         # Continuous scores are already in 0.0-1.0 range
         return evaluation.score
 

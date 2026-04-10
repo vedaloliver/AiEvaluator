@@ -102,6 +102,7 @@ export default function ModelResultCard({ result, index }: ModelResultCardProps)
           </h4>
           <div className="grid grid-cols-2 gap-3">
             {customMetrics.map((metric) => {
+              if (!metric.evaluation) return null;
               const normalized = normalizeScore(metric.evaluation);
               const displayScore = metric.evaluation.scoreType === 'ordinal'
                 ? `${metric.evaluation.score}/${metric.evaluation.maxScore}`

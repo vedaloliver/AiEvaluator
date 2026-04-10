@@ -11,6 +11,7 @@ import time
 import logging
 from config.settings import settings
 from routes.evaluation_routes import router
+from routes.red_team_routes import router as red_team_router
 
 # Configure logging
 logging.basicConfig(
@@ -53,7 +54,9 @@ async def lifespan(app: FastAPI):
     print(f"   - http://localhost:{settings.port}/api/v1/health")
     print(f"   - http://localhost:{settings.port}/api/v1/scenarios")
     print(f"   - http://localhost:{settings.port}/api/v1/models")
-    print(f"   - http://localhost:{settings.port}/api/v1/evaluate\n")
+    print(f"   - http://localhost:{settings.port}/api/v1/evaluate")
+    print(f"   - http://localhost:{settings.port}/api/v1/red-team/run-suite")
+    print(f"   - http://localhost:{settings.port}/api/v1/red-team/attack-categories\n")
 
     yield
 
@@ -99,6 +102,7 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router, prefix="/api/v1")
+app.include_router(red_team_router, prefix="/api/v1")
 
 
 @app.get("/")
@@ -114,6 +118,11 @@ async def root():
             "evaluate": "POST /api/v1/evaluate",
             "scenarios": "GET /api/v1/scenarios",
             "models": "GET /api/v1/models",
+            "redTeam": {
+                "runSuite": "POST /api/v1/red-team/run-suite",
+                "attackCategories": "GET /api/v1/red-team/attack-categories",
+                "attackStrategies": "GET /api/v1/red-team/attack-strategies",
+            }
         }
     }
 
