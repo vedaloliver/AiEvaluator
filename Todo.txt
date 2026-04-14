@@ -1,6 +1,0 @@
-- Change frontend 
-
-- add in more evaluators
--- look on the internet for what evaluators are possible
-
-- rewrite cv to be less ai-y
