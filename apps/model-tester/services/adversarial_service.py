@@ -1,33 +1,36 @@
-"""Red Team Service for adversarial testing"""
+"""Adversarial Testing Service - calls Response Evaluator to test model vulnerabilities"""
 import asyncio
+import httpx
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 from models import (
     RedTeamRequest,
     RedTeamSuiteResult,
     RedTeamAttackResult,
     RedTeamAttack,
-    EvaluationRequest,
+    EvaluationResult,
 )
-from .mock_evaluator import MockEvaluatorService
-from config.red_team_attacks import (
+from config.settings import settings
+from config.attacks import (
     RED_TEAM_ATTACKS,
     get_attacks_by_scenario,
     get_attacks_by_category,
+    get_attacks_by_threat_type,
     ATTACK_CATEGORIES,
     ATTACK_STRATEGIES,
+    THREAT_TYPES,
 )
 
 
-class RedTeamService:
-    """Service for running red team adversarial attacks"""
+class AdversarialService:
+    """Service for running adversarial attack suites against models"""
 
     def __init__(self):
-        self.evaluator_service = MockEvaluatorService()
+        self.response_evaluator_url = settings.response_evaluator_url
 
     async def run_attack_suite(self, request: RedTeamRequest) -> RedTeamSuiteResult:
         """
-        Run a suite of red team attacks against a model and scenario.
+        Run a suite of adversarial attacks against a model and scenario.
 
         Args:
             request: Red team request with scenario_id, model_id, and optional filters
@@ -56,11 +59,18 @@ class RedTeamService:
                 if a.attack_strategy in request.attack_strategies
             ]
 
+        # Apply threat type filter (new)
+        if hasattr(request, 'threat_types') and request.threat_types:
+            attacks = [
+                a for a in attacks
+                if a.threat_type in request.threat_types
+            ]
+
         # Apply limit
         if request.limit and request.limit > 0:
             attacks = attacks[:request.limit]
 
-        # Run all attacks
+        # Run all attacks by calling response evaluator
         attack_results = await self._run_attacks(attacks, request.model_id)
 
         # Calculate metrics
@@ -94,7 +104,7 @@ class RedTeamService:
         model_id: str
     ) -> List[RedTeamAttackResult]:
         """
-        Run multiple attacks in parallel.
+        Run multiple attacks by calling the response evaluator service.
 
         Args:
             attacks: List of attacks to run
@@ -103,22 +113,23 @@ class RedTeamService:
         Returns:
             List of attack results
         """
-        # Create evaluation requests for each attack
-        eval_requests = [
-            EvaluationRequest(
-                scenarioId=attack.scenario_id,
-                modelId=model_id,
-                query=attack.base_query  # Using base query directly (no transformation in mock mode)
-            )
-            for attack in attacks
-        ]
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            tasks = []
+            for attack in attacks:
+                task = self._evaluate_attack(client, attack, model_id)
+                tasks.append(task)
 
-        # Run evaluations in parallel
-        eval_results = await self.evaluator_service.evaluate_batch(eval_requests)
+            # Run all evaluations in parallel
+            eval_results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Convert to attack results
         attack_results = []
-        for i, (attack, eval_result) in enumerate(zip(attacks, eval_results)):
+        for attack, eval_result in zip(attacks, eval_results):
+            # Handle errors
+            if isinstance(eval_result, Exception):
+                print(f"Error evaluating attack {attack.id}: {eval_result}")
+                continue
+
             actual_outcome = eval_result.governance_decision.status
             vulnerability_detected = (
                 actual_outcome == "PASS"  # If attack got PASS, governance failed to block it
@@ -128,7 +139,7 @@ class RedTeamService:
                 attackId=attack.id,
                 category=attack.category,
                 attackStrategy=attack.attack_strategy,
-                transformedQuery=attack.base_query,  # No transformation in simple mode
+                transformedQuery=attack.base_query,
                 evaluationResult=eval_result,
                 expectedOutcome=attack.expected_outcome,
                 actualOutcome=actual_outcome,
@@ -138,6 +149,37 @@ class RedTeamService:
 
         return attack_results
 
+    async def _evaluate_attack(
+        self,
+        client: httpx.AsyncClient,
+        attack: RedTeamAttack,
+        model_id: str
+    ) -> EvaluationResult:
+        """
+        Call the response evaluator service to evaluate a single attack.
+
+        Args:
+            client: HTTP client
+            attack: Attack to evaluate
+            model_id: Model ID to test
+
+        Returns:
+            EvaluationResult from the response evaluator
+        """
+        url = f"{self.response_evaluator_url}/api/v1/evaluate"
+        payload = {
+            "scenarioId": attack.scenario_id,
+            "modelId": model_id,
+            "query": attack.base_query
+        }
+
+        response = await client.post(url, json=payload)
+        response.raise_for_status()
+
+        # Parse response into EvaluationResult
+        data = response.json()
+        return EvaluationResult(**data)
+
     def get_attack_categories(self) -> List[dict]:
         """Get all available attack categories"""
         return ATTACK_CATEGORIES
@@ -146,6 +188,10 @@ class RedTeamService:
         """Get all available attack strategies"""
         return ATTACK_STRATEGIES
 
+    def get_threat_types(self) -> List[dict]:
+        """Get all available threat types"""
+        return THREAT_TYPES
+
     def get_scenario_attack_count(self, scenario_id: str) -> int:
         """Get count of attacks for a scenario"""
         return len(get_attacks_by_scenario(scenario_id))
@@ -153,3 +199,7 @@ class RedTeamService:
     def get_category_attack_count(self, category: str) -> int:
         """Get count of attacks for a category"""
         return len(get_attacks_by_category(category))
+
+    def get_threat_type_attack_count(self, threat_type: str) -> int:
+        """Get count of attacks for a threat type"""
+        return len(get_attacks_by_threat_type(threat_type))

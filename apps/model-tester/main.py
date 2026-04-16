@@ -1,6 +1,6 @@
 """
-AI Evaluator Service - Python Implementation
-FastAPI server for evaluating AI model responses against regulatory scenarios
+Model Tester Service
+FastAPI server for running adversarial attack suites against AI models
 """
 
 from contextlib import asynccontextmanager
@@ -10,8 +10,7 @@ import uvicorn
 import time
 import logging
 from config.settings import settings
-from routes.evaluation_routes import router
-from routes.red_team_routes import router as red_team_router
+from routes.adversarial_routes import router
 
 # Configure logging
 logging.basicConfig(
@@ -26,37 +25,22 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown"""
     # Startup
-    print("\n>> Evaluator Service (Python) starting...")
+    print("\n>> Model Tester Service starting...")
     print(f"   Environment: {settings.environment}")
+    print(f"   Response Evaluator URL: {settings.response_evaluator_url}")
 
     if settings.use_mock_data:
         print("   Mode: MOCK DATA (using test fixtures)")
         print("   Set USE_MOCK_DATA=false to use real Azure integration")
     else:
-        # Validate Azure configuration
-        if not all([
-            settings.azure_ai_foundry_endpoint,
-            settings.azure_subscription_id,
-            settings.azure_tenant_id,
-            settings.azure_client_id,
-            settings.azure_client_secret
-        ]):
-            print("   ERROR: Missing required Azure environment variables!")
-            print("   Tip: Set USE_MOCK_DATA=true in .env to use mock data instead")
-            print("   Please check your .env file")
-            exit(1)
-
         print("   Mode: Azure AI Foundry")
-        print(f"   Azure Endpoint: {settings.azure_ai_foundry_endpoint}")
 
     print(f"\n>> Service running on port {settings.port}")
     print(f"   - http://localhost:{settings.port}/")
     print(f"   - http://localhost:{settings.port}/api/v1/health")
-    print(f"   - http://localhost:{settings.port}/api/v1/scenarios")
-    print(f"   - http://localhost:{settings.port}/api/v1/models")
-    print(f"   - http://localhost:{settings.port}/api/v1/evaluate")
-    print(f"   - http://localhost:{settings.port}/api/v1/red-team/run-suite")
-    print(f"   - http://localhost:{settings.port}/api/v1/red-team/attack-categories\n")
+    print(f"   - http://localhost:{settings.port}/api/v1/adversarial/run-suite")
+    print(f"   - http://localhost:{settings.port}/api/v1/adversarial/attack-categories")
+    print(f"   - http://localhost:{settings.port}/api/v1/adversarial/attack-strategies\n")
 
     yield
 
@@ -66,8 +50,8 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI app
 app = FastAPI(
-    title="AI Evaluator Service",
-    description="Evaluates AI model responses against regulatory scenarios",
+    title="Model Tester Service",
+    description="Runs adversarial attack suites against AI models to identify vulnerabilities",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -102,26 +86,23 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router, prefix="/api/v1")
-app.include_router(red_team_router, prefix="/api/v1")
 
 
 @app.get("/")
 async def root():
     """Root endpoint with service information"""
     return {
-        "service": "AI Evaluator Service (Python)",
+        "service": "Model Tester Service",
         "version": "1.0.0",
         "status": "running",
         "mode": "mock" if settings.use_mock_data else "azure",
         "endpoints": {
             "health": "/api/v1/health",
-            "evaluate": "POST /api/v1/evaluate",
-            "scenarios": "GET /api/v1/scenarios",
-            "models": "GET /api/v1/models",
-            "redTeam": {
-                "runSuite": "POST /api/v1/red-team/run-suite",
-                "attackCategories": "GET /api/v1/red-team/attack-categories",
-                "attackStrategies": "GET /api/v1/red-team/attack-strategies",
+            "adversarial": {
+                "runSuite": "POST /api/v1/adversarial/run-suite",
+                "attackCategories": "GET /api/v1/adversarial/attack-categories",
+                "attackStrategies": "GET /api/v1/adversarial/attack-strategies",
+                "scenarioAttackCount": "GET /api/v1/adversarial/scenarios/{id}/attack-count"
             }
         }
     }
