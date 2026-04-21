@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "fb8a3c4e-1234-5678-90ab-cdef12345678",
 		"name": "Financial Budget Testing",
-		"description": "Simplified collection for testing AI responses to financial budget queries.\n\nThis collection tests:\n- Response evaluation for spending habit queries\n- Budget advice scenarios\n- Investment questions\n- Debt management inquiries\n- Adversarial testing for financial scenarios",
+		"description": "Comprehensive collection for testing AI responses to financial budget queries with observability.\n\nThis collection tests:\n- Response evaluation for spending habit queries\n- Budget advice scenarios\n- Investment questions\n- Debt management inquiries\n- Adversarial/red team testing for financial scenarios\n- Observability metrics, traces, and analytics",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -144,7 +144,7 @@
 			"description": "Tests individual response evaluation for financial budget queries"
 		},
 		{
-			"name": "Model Tester (Adversarial)",
+			"name": "Adversarial Tester (Red Team)",
 			"item": [
 				{
 					"name": "Health Check",
@@ -268,18 +268,158 @@
 					"response": []
 				}
 			],
-			"description": "Adversarial testing to identify vulnerabilities in financial advice responses"
+			"description": "Red team adversarial testing to identify security vulnerabilities and compliance issues in financial advice responses"
+		},
+		{
+			"name": "Observability Service",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/health",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analytics Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/summary",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "analytics", "summary"]
+						},
+						"description": "Get aggregated metrics across all evaluation and adversarial runs"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Evaluation Runs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/evaluation-runs?limit=10",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "analytics", "evaluation-runs"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "modelId",
+									"value": "gpt-4o",
+									"disabled": true
+								},
+								{
+									"key": "scenarioId",
+									"value": "fca-consumer-duty",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get recent evaluation runs with optional filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Adversarial Runs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/adversarial-runs?limit=10",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "analytics", "adversarial-runs"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get recent adversarial/red team runs"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trace by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "traces", "{{TRACE_ID}}"]
+						},
+						"description": "Get trace details by ID (set TRACE_ID variable from evaluation response)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trace Flow Visualization",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}/flow",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "traces", "{{TRACE_ID}}", "flow"]
+						},
+						"description": "Get hierarchical flow visualization for end-to-end trace analysis"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trace Spans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}/spans",
+							"host": ["{{OBSERVABILITY_URL}}"],
+							"path": ["api", "v1", "traces", "{{TRACE_ID}}", "spans"]
+						},
+						"description": "Get all spans for a specific trace"
+					},
+					"response": []
+				}
+			],
+			"description": "Observability service endpoints for metrics, traces, and analytics"
 		}
 	],
 	"variable": [
 		{
 			"key": "EVALUATOR_URL",
-			"value": "http://localhost:8001",
+			"value": "http://localhost:3001",
 			"type": "string"
 		},
 		{
 			"key": "MODEL_TESTER_URL",
-			"value": "http://localhost:8002",
+			"value": "http://localhost:3002",
+			"type": "string"
+		},
+		{
+			"key": "ADVERSARIAL_TESTER_URL",
+			"value": "http://localhost:3002",
+			"type": "string"
+		},
+		{
+			"key": "OBSERVABILITY_URL",
+			"value": "http://localhost:8003",
+			"type": "string"
+		},
+		{
+			"key": "TRACE_ID",
+			"value": "",
 			"type": "string"
 		}
 	]

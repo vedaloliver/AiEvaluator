@@ -7,14 +7,18 @@ Use this for development and testing the UI without Azure credentials.
 
 import asyncio
 import random
+import uuid
 from datetime import datetime
 from models import EvaluationRequest, EvaluationResult, EvaluationMetrics, EvaluationScore
 from .governance_service import GovernanceService
 from .model_service import ModelService
 from .built_in_evaluator_service import BuiltInEvaluatorService
 from .custom_fca_evaluator_service import CustomFCAEvaluatorService
+from .token_service import calculate_tokens_and_cost
+from .observability_client import ObservabilityClient
 from config.scenarios import get_scenario_by_id
 from config.thresholds import get_effective_thresholds
+from config.settings import settings
 from fixtures.mock_responses import get_mock_response
 
 
@@ -26,10 +30,22 @@ class MockEvaluatorService:
         self.model_service = ModelService()
         self.built_in_service = BuiltInEvaluatorService()
         self.fca_service = CustomFCAEvaluatorService()
+        self.observability_client = ObservabilityClient(settings.observability_service_url)
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResult:
         """Main evaluation method using mock data"""
         start_time = datetime.now()
+
+        # Generate trace and span IDs for observability
+        trace_id = str(uuid.uuid4())
+        span_id = str(uuid.uuid4())
+
+        # Create trace in observability service (non-blocking)
+        try:
+            await self.observability_client.create_trace(trace_id)
+        except Exception as e:
+            # Log but don't fail evaluation
+            print(f"Warning: Failed to create trace: {e}")
 
         # Simulate API delay (800-1500ms)
         await self._simulate_delay(800, 1500)
@@ -71,6 +87,14 @@ class MockEvaluatorService:
         # Get mock response
         model_response = get_mock_response(request.model_id, request.scenario_id)
 
+        # Calculate tokens and cost
+        token_usage, cost_estimate = calculate_tokens_and_cost(
+            query=request.query,
+            system_prompt=scenario.system_prompt,
+            response=model_response,
+            model_id=request.model_id
+        )
+
         # Get built-in evaluations (safety, relevance, coherence, fluency)
         evaluations = await self.built_in_service.evaluate(
             request.model_id, request.scenario_id, request.query, model_response
@@ -101,7 +125,7 @@ class MockEvaluatorService:
         # Calculate duration
         duration_ms = int((datetime.now() - start_time).total_seconds() * 1000)
 
-        # Construct result
+        # Construct result with observability data
         result = EvaluationResult(
             modelId=request.model_id,
             query=request.query,
@@ -109,8 +133,46 @@ class MockEvaluatorService:
             evaluations=evaluations,
             governanceDecision=governance_decision,
             timestamp=datetime.now().isoformat(),
-            durationMs=duration_ms
+            durationMs=duration_ms,
+            traceId=trace_id,
+            spanId=span_id,
+            tokenUsage=token_usage,
+            costEstimate=cost_estimate
         )
+
+        # Create span in observability service (non-blocking)
+        try:
+            await self.observability_client.create_span({
+                "spanId": span_id,
+                "traceId": trace_id,
+                "name": "evaluate",
+                "spanType": "evaluation",
+                "durationMs": duration_ms,
+                "attributes": {
+                    "modelId": request.model_id,
+                    "scenarioId": request.scenario_id,
+                    "decision": governance_decision.status
+                }
+            })
+        except Exception as e:
+            # Log but don't fail evaluation
+            print(f"Warning: Failed to create span: {e}")
+
+        # Store evaluation run in observability service (non-blocking)
+        try:
+            eval_data = result.model_dump(by_alias=True)
+            eval_data["scenarioId"] = request.scenario_id  # Add scenario_id
+            await self.observability_client.store_evaluation_run(eval_data)
+        except Exception as e:
+            # Log but don't fail evaluation
+            print(f"Warning: Failed to store evaluation run: {e}")
+
+        # Mark trace as completed (non-blocking)
+        try:
+            await self.observability_client.update_trace(trace_id, status="completed")
+        except Exception as e:
+            # Log but don't fail evaluation
+            print(f"Warning: Failed to update trace: {e}")
 
         return result
 

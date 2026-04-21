@@ -7,6 +7,7 @@ slowapi>=0.1.9
 pytest>=7.4.4
 pytest-asyncio>=0.23.3
 httpx>=0.26.0
+tiktoken>=0.5.0
 
 # Azure dependencies (optional, only needed when USE_MOCK_DATA=false)
 # azure-ai-evaluation==1.0.0

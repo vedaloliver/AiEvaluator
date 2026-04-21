@@ -9,8 +9,11 @@ class Settings(BaseSettings):
     use_mock_data: bool = True
 
     # Service configuration
-    port: int = 3001
+    port: int = 3002
     environment: str = "development"
+
+    # Observability service
+    observability_service_url: str = "http://localhost:8003"
 
     # Azure AI Foundry (required when use_mock_data=False)
     azure_ai_foundry_endpoint: Optional[str] = None
@@ -22,9 +25,6 @@ class Settings(BaseSettings):
     # Rate limiting
     rate_limit_requests: int = 100
     rate_limit_window: int = 60  # seconds
-
-    # Observability service
-    observability_service_url: str = "http://localhost:8003"
 
     class Config:
         env_file = ".env"
