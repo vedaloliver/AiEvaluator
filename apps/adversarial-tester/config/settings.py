@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     azure_client_id: Optional[str] = None
     azure_client_secret: Optional[str] = None
 
+    # Azure AI Foundry Red Teaming (PyRIT cloud eval)
+    use_azure_red_team: bool = False
+    azure_ai_project_endpoint: str = ""
+
     # Rate limiting
     rate_limit_requests: int = 100
     rate_limit_window: int = 60  # seconds

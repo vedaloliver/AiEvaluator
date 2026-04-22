@@ -4,9 +4,8 @@ import logging
 from datetime import datetime
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
 
-from database.connection import get_db_session
+from database.connection import get_repository
 from database.repository import ObservabilityRepository
 from models.responses import (
     EvaluationRunResponse,
@@ -16,14 +15,6 @@ from models.responses import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def get_repository(db: Session = Depends(get_db_session)) -> ObservabilityRepository:
-    """Dependency to get repository instance."""
-    try:
-        return ObservabilityRepository(db)
-    finally:
-        db.close()
 
 
 @router.get("/analytics/evaluation-runs", response_model=List[EvaluationRunResponse])

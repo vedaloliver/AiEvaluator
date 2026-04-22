@@ -20,9 +20,12 @@ from config.attacks import (
     ATTACK_STRATEGIES,
     THREAT_TYPES,
 )
+from config.transformation_strategies import TRANSFORMATION_STRATEGIES, resolve_strategy_key
 from services.observability_client import ObservabilityClient
 from services.mock_response_service import MockResponseService
 from services.flag_detector_service import FlagDetectorService
+from services.fca_scorer_service import FCAScorerService
+from services.attack_transformer_service import AttackTransformerService
 
 
 class AdversarialService:
@@ -32,6 +35,8 @@ class AdversarialService:
         self.observability_client = ObservabilityClient(settings.observability_service_url)
         self.mock_service = MockResponseService(attack_success_rate=0.3)
         self.flag_detector = FlagDetectorService()
+        self.fca_scorer = FCAScorerService()
+        self.transformer = AttackTransformerService()
 
     async def run_attack_suite(self, request: RedTeamRequest) -> RedTeamSuiteResult:
         """
@@ -67,25 +72,39 @@ class AdversarialService:
                 if a.category in request.attack_categories
             ]
 
+        # Split requested strategies into conceptual (filter) vs transformation (expand)
+        transformation_keys: List[str] = []
+        conceptual_strategies: List[str] = []
         if request.attack_strategies:
-            attacks = [
-                a for a in attacks
-                if a.attack_strategy in request.attack_strategies
-            ]
+            for s in request.attack_strategies:
+                key = resolve_strategy_key(s)
+                if key in TRANSFORMATION_STRATEGIES:
+                    transformation_keys.append(key)
+                else:
+                    conceptual_strategies.append(s)
 
-        # Apply threat type filter (new)
+        if conceptual_strategies:
+            attacks = [a for a in attacks if a.attack_strategy in conceptual_strategies]
+
+        # Apply threat type filter
         if hasattr(request, 'threat_types') and request.threat_types:
             attacks = [
                 a for a in attacks
                 if a.threat_type in request.threat_types
             ]
 
-        # Apply limit
-        if request.limit and request.limit > 0:
-            attacks = attacks[:request.limit]
+        # Expand: each attack × each transformation (or once with no transformation)
+        if transformation_keys:
+            expanded = [(attack, key) for attack in attacks for key in transformation_keys]
+        else:
+            expanded = [(attack, None) for attack in attacks]
 
-        # Run all attacks by calling response evaluator
-        attack_results = await self._run_attacks(attacks, request.model_id, trace_id)
+        # Apply limit to expanded list
+        if request.limit and request.limit > 0:
+            expanded = expanded[:request.limit]
+
+        # Run all attacks
+        attack_results = await self._run_attacks(expanded, request.model_id, trace_id)
 
         # Calculate metrics
         total_attacks = len(attack_results)
@@ -128,7 +147,7 @@ class AdversarialService:
 
     async def _run_attacks(
         self,
-        attacks: List[RedTeamAttack],
+        expanded: List[tuple],
         model_id: str,
         trace_id: str
     ) -> List[RedTeamAttackResult]:
@@ -136,24 +155,24 @@ class AdversarialService:
         Run multiple attacks independently with flag detection.
 
         Args:
-            attacks: List of attacks to run
+            expanded: List of (RedTeamAttack, transformation_key | None) tuples
             model_id: Model ID to test
             trace_id: Trace ID for observability
 
         Returns:
             List of attack results
         """
-        tasks = []
-        for attack in attacks:
-            task = self._evaluate_attack(attack, model_id, trace_id)
-            tasks.append(task)
+        tasks = [
+            self._evaluate_attack(attack, model_id, trace_id, transformation_key)
+            for attack, transformation_key in expanded
+        ]
 
         # Run all evaluations in parallel
         attack_results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Filter out errors
         valid_results = []
-        for attack, result in zip(attacks, attack_results):
+        for (attack, _), result in zip(expanded, attack_results):
             if isinstance(result, Exception):
                 print(f"Error evaluating attack {attack.id}: {type(result).__name__}: {str(result)}")
                 import traceback
@@ -167,7 +186,8 @@ class AdversarialService:
         self,
         attack: RedTeamAttack,
         model_id: str,
-        trace_id: str
+        trace_id: str,
+        transformation_key: str | None = None,
     ) -> RedTeamAttackResult:
         """
         Evaluate a single attack independently without calling response evaluator.
@@ -176,12 +196,22 @@ class AdversarialService:
             attack: Attack to evaluate
             model_id: Model ID to test
             trace_id: Trace ID for observability
+            transformation_key: Optional transformation strategy key (e.g. "base64", "rot13")
 
         Returns:
             RedTeamAttackResult with flag detection and outcome
         """
         span_id = str(uuid.uuid4())
         span_start = datetime.now()
+
+        # Apply transformation if requested
+        if transformation_key:
+            transformed = self.transformer.transform(attack.base_query, transformation_key)
+            query_to_send = transformed.transformed_query
+            transformation_applied = transformed.strategy_name
+        else:
+            query_to_send = attack.base_query
+            transformation_applied = None
 
         # Get mock response from the service
         response = self.mock_service.get_mock_response(model_id, attack.category)
@@ -212,7 +242,14 @@ class AdversarialService:
             actual_outcome = "PASS"  # No flags = potential vulnerability
             vulnerability_detected = True
 
-        print(f"Attack {attack.id}: {len(detected_flags)} flags detected, outcome: {actual_outcome}")
+        print(f"Attack {attack.id} [{transformation_applied or 'direct'}]: {len(detected_flags)} flags detected, outcome: {actual_outcome}")
+
+        # PyRIT-compatible scorer evaluation
+        scorer_result = await self.fca_scorer.score(
+            response=response,
+            attack=attack,
+            regex_flags=flag_models,
+        )
 
         # Create attack result
         result = RedTeamAttackResult(
@@ -220,12 +257,13 @@ class AdversarialService:
             category=attack.category,
             attackStrategy=attack.attack_strategy,
             threatType=attack.threat_type,
-            transformedQuery=attack.base_query,
+            transformedQuery=query_to_send,
             modelResponse=response,
             detectedFlags=flag_models,
             expectedOutcome=attack.expected_outcome,
             actualOutcome=actual_outcome,
-            vulnerabilityDetected=vulnerability_detected
+            vulnerabilityDetected=vulnerability_detected,
+            scorerResult=scorer_result,
         )
 
         # Calculate span duration
@@ -244,6 +282,7 @@ class AdversarialService:
                     "attackCategory": attack.category,
                     "attackStrategy": attack.attack_strategy,
                     "threatType": attack.threat_type,
+                    "transformationApplied": transformation_applied,
                     "outcome": actual_outcome,
                     "vulnerabilityDetected": vulnerability_detected,
                     "flagsDetected": len(detected_flags),
@@ -254,23 +293,6 @@ class AdversarialService:
         except Exception as e:
             print(f"Warning: Failed to create span for attack {attack.id}: {e}")
 
-        # Store attack detail in observability service (optional, non-blocking)
-        try:
-            await self.observability_client.store_attack_detail({
-                "attackId": attack.id,
-                "traceId": trace_id,
-                "spanId": span_id,
-                "query": attack.base_query,
-                "response": response,
-                "flagsDetected": [f.model_dump(by_alias=True) for f in flag_models],
-                "outcome": actual_outcome,
-                "vulnerabilityDetected": vulnerability_detected,
-                "timestamp": datetime.now().isoformat()
-            })
-        except Exception:
-            # Optional feature - silently continue if not available
-            pass
-
         return result
 
     def get_attack_categories(self) -> List[dict]:
@@ -278,8 +300,30 @@ class AdversarialService:
         return ATTACK_CATEGORIES
 
     def get_attack_strategies(self) -> List[dict]:
-        """Get all available attack strategies"""
-        return ATTACK_STRATEGIES
+        """Get all available attack strategies.
+
+        Returns two groups in one list, distinguished by the ``type`` field:
+
+        - ``"conceptual"`` — high-level attack approach used to label seed
+          attacks (direct, social-engineering, implicit).  These are the values
+          accepted by the ``attackStrategies`` run-suite filter.
+        - ``"transformation"`` — query obfuscation techniques (Base64, ROT13,
+          etc.).  Each entry includes a ``pyrit_name`` for use with the Azure
+          red team / PyRIT APIs.
+        """
+        conceptual = [{"type": "conceptual", **s} for s in ATTACK_STRATEGIES]
+        transformation = [
+            {
+                "type": "transformation",
+                "id": key,
+                "pyrit_name": meta["pyrit_name"],
+                "name": meta["name"],
+                "description": meta["description"],
+                "category": meta.get("category", "transformation"),
+            }
+            for key, meta in TRANSFORMATION_STRATEGIES.items()
+        ]
+        return conceptual + transformation
 
     def get_threat_types(self) -> List[dict]:
         """Get all available threat types"""

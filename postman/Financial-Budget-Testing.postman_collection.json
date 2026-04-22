@@ -16,8 +16,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/health",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "health"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health"
+							]
 						}
 					},
 					"response": []
@@ -29,8 +35,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/scenarios",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "scenarios"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scenarios"
+							]
 						}
 					},
 					"response": []
@@ -42,8 +54,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/models",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "models"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"models"
+							]
 						}
 					},
 					"response": []
@@ -64,8 +82,14 @@
 						},
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/evaluate",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "evaluate"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"evaluate"
+							]
 						},
 						"description": "Tests response evaluation for a query about monthly spending patterns and budget allocation."
 					},
@@ -87,8 +111,14 @@
 						},
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/evaluate",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "evaluate"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"evaluate"
+							]
 						},
 						"description": "Tests response evaluation for savings goal planning and budget optimization advice."
 					},
@@ -110,8 +140,14 @@
 						},
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/evaluate",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "evaluate"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"evaluate"
+							]
 						},
 						"description": "Tests response evaluation for investment advice queries with risk assessment."
 					},
@@ -133,8 +169,14 @@
 						},
 						"url": {
 							"raw": "{{EVALUATOR_URL}}/api/v1/evaluate",
-							"host": ["{{EVALUATOR_URL}}"],
-							"path": ["api", "v1", "evaluate"]
+							"host": [
+								"{{EVALUATOR_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"evaluate"
+							]
 						},
 						"description": "Tests response evaluation for debt management and repayment strategy advice."
 					},
@@ -152,9 +194,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/health",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "health"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/health",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health"
+							]
 						}
 					},
 					"response": []
@@ -165,9 +213,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/attack-categories",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "attack-categories"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/attack-categories",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"attack-categories"
+							]
 						}
 					},
 					"response": []
@@ -178,9 +233,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/attack-strategies",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "attack-strategies"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/attack-strategies",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"attack-strategies"
+							]
 						}
 					},
 					"response": []
@@ -200,9 +262,16 @@
 							"raw": "{\n  \"scenarioId\": \"fca-consumer-duty\",\n  \"modelId\": \"gpt-4o\",\n  \"limit\": 10\n}"
 						},
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/run-suite",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "run-suite"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/run-suite",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"run-suite"
+							]
 						},
 						"description": "Runs adversarial attacks against the model for financial scenario testing. Tests vulnerabilities like:\n- Prompt injection attacks\n- Information evasion\n- Compliance bypass attempts\n- Biased recommendations"
 					},
@@ -223,16 +292,23 @@
 							"raw": "{\n  \"scenarioId\": \"fca-consumer-duty\",\n  \"modelId\": \"gpt-4o\",\n  \"attackCategories\": [\"prohibited-actions\", \"compliance-bypass\"],\n  \"limit\": 5\n}"
 						},
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/run-suite",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "run-suite"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/run-suite",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"run-suite"
+							]
 						},
 						"description": "Runs filtered adversarial attacks focusing on prohibited actions and compliance bypass scenarios."
 					},
 					"response": []
 				},
 				{
-					"name": "Red Team Suite: Jailbreak Attempts",
+					"name": "Red Team Suite: PyRIT Encoding Strategies",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -243,14 +319,21 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"scenarioId\": \"fca-consumer-duty\",\n  \"modelId\": \"gpt-4o\",\n  \"attackStrategies\": [\"jailbreak\", \"social-engineering\"],\n  \"limit\": 5\n}"
+							"raw": "{\n  \"scenarioId\": \"fca-consumer-duty\",\n  \"modelId\": \"gpt-4o\",\n  \"attackStrategies\": [\"Base64\", \"Flip\", \"ROT13\"],\n  \"limit\": 5\n}"
 						},
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/run-suite",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "run-suite"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/run-suite",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"run-suite"
+							]
 						},
-						"description": "Tests model resilience against jailbreak and social engineering attack strategies."
+						"description": "Tests model resilience using PyRIT canonical transformation strategy names.\nBase64, Flip and ROT13 are accepted alongside legacy internal keys.\nResponses include scorerResult with PyRIT pass/fail verdict."
 					},
 					"response": []
 				},
@@ -260,15 +343,90 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{MODEL_TESTER_URL}}/api/v1/adversarial/scenarios/fca-consumer-duty/attack-count",
-							"host": ["{{MODEL_TESTER_URL}}"],
-							"path": ["api", "v1", "adversarial", "scenarios", "fca-consumer-duty", "attack-count"]
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/scenarios/fca-consumer-duty/attack-count",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"scenarios",
+								"fca-consumer-duty",
+								"attack-count"
+							]
 						}
 					},
 					"response": []
 				}
 			],
 			"description": "Red team adversarial testing to identify security vulnerabilities and compliance issues in financial advice responses"
+		},
+		{
+			"name": "Azure AI Foundry Red Team",
+			"description": "Cloud red team evaluation via Azure AI Foundry.\n\nRequires USE_AZURE_RED_TEAM=true and AZURE_AI_PROJECT_ENDPOINT set.\nAll requests return HTTP 501 when Azure credentials are not configured.\nWith USE_MOCK_DATA=true the mock backend returns deterministic results immediately.",
+			"item": [
+				{
+					"name": "Upload FCA Taxonomy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"scenario_id\": \"fca-consumer-duty\",\n  \"prohibited\": [],\n  \"high_risk\": [],\n  \"irreversible\": [],\n  \"version\": \"1.0.0\",\n  \"last_updated\": \"2026-04-22\"\n}"
+						},
+						"url": {
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/taxonomy",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"taxonomy"
+							]
+						},
+						"description": "Registers a ProhibitedActionsTaxonomy with Azure AI Foundry.\nReturns taxonomyFileId to use in run-cloud requests.\n⚠️  Requires Azure credentials — returns 501 without them."
+					},
+					"response": []
+				},
+				{
+					"name": "Run Cloud Eval (mock)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"agentName\": \"{{AZURE_AI_AGENT_NAME}}\",\n  \"agentVersion\": \"{{AZURE_AI_AGENT_VERSION}}\",\n  \"attackStrategies\": [\"Base64\", \"Flip\", \"ROT13\", \"Leetspeak\"],\n  \"riskCategories\": [\"PROHIBITED_ACTIONS\", \"SENSITIVE_DATA_LEAKAGE\"],\n  \"numTurns\": 5,\n  \"taxonomyId\": \"{{TAXONOMY_ID}}\"\n}"
+						},
+						"url": {
+							"raw": "{{ADVERSARIAL_TESTER_URL}}/api/v1/adversarial/run-cloud",
+							"host": [
+								"{{ADVERSARIAL_TESTER_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"adversarial",
+								"run-cloud"
+							]
+						},
+						"description": "Creates a PyRIT red team eval run via Azure AI Foundry.\nWith USE_MOCK_DATA=true returns a deterministic completed run immediately.\n⚠️  Requires Azure credentials for the real backend — returns 501 without them."
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Observability Service",
@@ -280,8 +438,14 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/health",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "health"]
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health"
+							]
 						}
 					},
 					"response": []
@@ -293,8 +457,15 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/summary",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "analytics", "summary"]
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"analytics",
+								"summary"
+							]
 						},
 						"description": "Get aggregated metrics across all evaluation and adversarial runs"
 					},
@@ -307,8 +478,15 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/evaluation-runs?limit=10",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "analytics", "evaluation-runs"],
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"analytics",
+								"evaluation-runs"
+							],
 							"query": [
 								{
 									"key": "limit",
@@ -337,8 +515,15 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/analytics/adversarial-runs?limit=10",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "analytics", "adversarial-runs"],
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"analytics",
+								"adversarial-runs"
+							],
 							"query": [
 								{
 									"key": "limit",
@@ -357,8 +542,15 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "traces", "{{TRACE_ID}}"]
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"traces",
+								"{{TRACE_ID}}"
+							]
 						},
 						"description": "Get trace details by ID (set TRACE_ID variable from evaluation response)"
 					},
@@ -371,8 +563,16 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}/flow",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "traces", "{{TRACE_ID}}", "flow"]
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"traces",
+								"{{TRACE_ID}}",
+								"flow"
+							]
 						},
 						"description": "Get hierarchical flow visualization for end-to-end trace analysis"
 					},
@@ -385,8 +585,16 @@
 						"header": [],
 						"url": {
 							"raw": "{{OBSERVABILITY_URL}}/api/v1/traces/{{TRACE_ID}}/spans",
-							"host": ["{{OBSERVABILITY_URL}}"],
-							"path": ["api", "v1", "traces", "{{TRACE_ID}}", "spans"]
+							"host": [
+								"{{OBSERVABILITY_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"traces",
+								"{{TRACE_ID}}",
+								"spans"
+							]
 						},
 						"description": "Get all spans for a specific trace"
 					},
@@ -403,7 +611,7 @@
 			"type": "string"
 		},
 		{
-			"key": "MODEL_TESTER_URL",
+			"key": "ADVERSARIAL_TESTER_URL",
 			"value": "http://localhost:3002",
 			"type": "string"
 		},
@@ -419,6 +627,26 @@
 		},
 		{
 			"key": "TRACE_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AZURE_AI_PROJECT_ENDPOINT",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AZURE_AI_AGENT_NAME",
+			"value": "fca-financial-assistant",
+			"type": "string"
+		},
+		{
+			"key": "AZURE_AI_AGENT_VERSION",
+			"value": "1.0.0",
+			"type": "string"
+		},
+		{
+			"key": "TAXONOMY_ID",
 			"value": "",
 			"type": "string"
 		}

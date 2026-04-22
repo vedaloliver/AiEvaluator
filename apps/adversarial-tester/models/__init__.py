@@ -40,6 +40,8 @@ from .azure import (
 )
 
 from .red_team import (
+    PyRITAttackStrategy,
+    PyRITScorerResult,
     AttackStrategy,
     AttackCategory,
     RedTeamAttack,
@@ -84,6 +86,8 @@ __all__ = [
     "AzureEvaluatorRequest",
     "AzureEvaluatorResponse",
     # Red Team
+    "PyRITAttackStrategy",
+    "PyRITScorerResult",
     "AttackStrategy",
     "AttackCategory",
     "RedTeamAttack",

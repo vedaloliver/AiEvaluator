@@ -127,38 +127,3 @@ class ObservabilityClient:
             logger.error(f"Unexpected error updating trace: {e}")
             return False
 
-    async def store_attack_detail(self, attack_data: Dict[str, Any]) -> bool:
-        """
-        Store detailed attack execution data.
-
-        NOTE: This endpoint is optional. If not implemented in observability service,
-        attacks will still be tracked via spans and adversarial runs.
-
-        Args:
-            attack_data: Attack detail data (attackId, traceId, query, response, flags, etc.)
-
-        Returns:
-            True if successful, False otherwise
-        """
-        try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                response = await client.post(
-                    f"{self.base_url}/api/v1/attacks",
-                    json=attack_data
-                )
-                response.raise_for_status()
-                logger.info(f"Stored attack detail: {attack_data.get('attackId')}")
-                return True
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                # Endpoint not implemented yet - this is optional
-                logger.debug(f"Attack detail endpoint not available (optional feature)")
-                return False
-            logger.warning(f"Error storing attack detail: {e}")
-            return False
-        except httpx.HTTPError as e:
-            logger.warning(f"Error storing attack detail: {e}")
-            return False
-        except Exception as e:
-            logger.warning(f"Unexpected error storing attack detail: {e}")
-            return False

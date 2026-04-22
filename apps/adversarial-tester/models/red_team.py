@@ -1,6 +1,29 @@
 """Red Team Models for adversarial testing"""
+from enum import Enum
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Literal, Optional, List
+
+
+class PyRITAttackStrategy(str, Enum):
+    """PyRIT canonical attack strategy names."""
+    Base64 = "Base64"
+    ROT13 = "ROT13"
+    Caesar = "Caesar"
+    Leetspeak = "Leetspeak"
+    Flip = "Flip"
+    CharSwap = "CharSwap"
+    UnicodeConfusable = "UnicodeConfusable"
+    SuffixAppend = "SuffixAppend"
+    CharacterSpace = "CharacterSpace"
+
+
+class PyRITScorerResult(BaseModel):
+    """PyRIT-compatible scorer result attached to each attack evaluation."""
+    score: Literal["pass", "fail"]
+    risk_category: str
+    reasoning: str
+    severity: Literal["low", "medium", "high"]
+    evaluation_method: str
 
 
 class AttackStrategy(BaseModel):
@@ -61,6 +84,9 @@ class RedTeamAttackResult(BaseModel):
     expected_outcome: str = Field(alias="expectedOutcome")
     actual_outcome: str = Field(alias="actualOutcome")  # PASS/FAIL based on flag detection
     vulnerability_detected: bool = Field(alias="vulnerabilityDetected")  # True if no flags detected (attack succeeded)
+
+    # PyRIT-compatible scorer result (populated by FCAScorerService)
+    scorer_result: Optional[PyRITScorerResult] = Field(default=None, alias="scorerResult")
 
     class Config:
         populate_by_name = True

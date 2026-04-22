@@ -2,9 +2,8 @@
 
 import logging
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
 
-from database.connection import get_db_session
+from database.connection import get_repository
 from database.repository import ObservabilityRepository
 from models.requests import (
     TraceCreateRequest,
@@ -17,14 +16,6 @@ from models.responses import TraceResponse, SpanResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def get_repository(db: Session = Depends(get_db_session)) -> ObservabilityRepository:
-    """Dependency to get repository instance."""
-    try:
-        return ObservabilityRepository(db)
-    finally:
-        db.close()
 
 
 @router.post("/traces", response_model=TraceResponse, status_code=201)

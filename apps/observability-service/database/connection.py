@@ -1,6 +1,7 @@
 """Database connection and session management."""
 
 import logging
+from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
@@ -46,6 +47,16 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-def get_db_session() -> Session:
-    """Get a database session (for dependency injection)."""
-    return SessionLocal()
+def get_db_session() -> Generator[Session, None, None]:
+    """FastAPI dependency: yields a session and guarantees cleanup after the request."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def get_repository(db: Session = Depends(get_db_session)) -> "ObservabilityRepository":
+    """FastAPI dependency: yields a repository bound to the request-scoped session."""
+    from database.repository import ObservabilityRepository
+    return ObservabilityRepository(db)
