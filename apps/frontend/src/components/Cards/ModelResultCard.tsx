@@ -13,7 +13,7 @@ export default function ModelResultCard({ result, index }: ModelResultCardProps)
   const [responseExpanded, setResponseExpanded] = useState(false);
   const [reasonsExpanded, setReasonsExpanded] = useState(false);
   const builtInMetrics = [
-    { label: 'Safety', value: result.evaluations.safety.score, key: 'safety', evaluation: result.evaluations.safety },
+    { label: 'Safetty', value: result.evaluations.safety.score, key: 'safety', evaluation: result.evaluations.safety },
     { label: 'Relevance', value: result.evaluations.relevance.score, key: 'relevance', evaluation: result.evaluations.relevance },
     { label: 'Coherence', value: result.evaluations.coherence.score, key: 'coherence', evaluation: result.evaluations.coherence },
     { label: 'Fluency', value: result.evaluations.fluency.score, key: 'fluency', evaluation: result.evaluations.fluency },
